@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Unit Converter</title>
+<style>
+:root {
+  --primary-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --background-color: #f4f7f9;
+  --card-background-color: #ffffff;
+  --text-color-primary: #2c3e50;
+  --text-color-secondary: #7f8c8d;
+  --accent-color: #3498db;
+  --accent-color-light: #a9cce3;
+  --border-color: #e0e6ed;
+  --border-color-light: #edf2f7;
+  --button-bg-color: #ffffff;
+  --button-hover-bg-color: #f8f9fa;
+  --input-bg-color: #fdfdfe;
+  --select-bg-color: #f7f9fb;
+
+  --border-radius-small: 4px;
+  --border-radius-medium: 6px;
+  --border-radius-large: 8px;
+
+  --transition-speed: 0.2s;
+}
+
+/* --- Basic Reset & Body Styles --- */
+body {
+  margin: 0;
+  font-family: var(--primary-font);
+  background-color: var(--background-color);
+  color: var(--text-color-primary);
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* --- Header --- */
+.app-header {
+  background-color: var(--accent-color);
+  color: white;
+  padding: 25px 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.app-header h1 {
+  margin: 0 0 5px 0;
+  font-size: 2rem;
+  font-weight: 600;
+}
+.app-header p {
+    margin: 0;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* --- Main Container --- */
+.container {
+  flex-grow: 1; /* Takes up remaining vertical space */
+  padding: 20px;
+  width: 100%;
+  max-width: 800px; /* Max width for the content area */
+  margin: 20px auto; /* Center the container */
+}
+
+/* --- Category Selector --- */
+.category-selector {
+    background-color: var(--card-background-color);
+    padding: 15px 20px;
+    border-radius: var(--border-radius-medium);
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.category-selector label {
+    font-weight: 500;
+    color: var(--text-color-secondary);
+}
+.category-selector select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    font-size: 0.95rem;
+    flex-grow: 1; /* Allow select to take available space */
+    background-color: var(--select-bg-color);
+    cursor: pointer;
+}
+
+/* --- Unit Converter Box --- */
+.unit-converter {
+  background-color: var(--card-background-color);
+  padding: 25px 30px;
+  border-radius: var(--border-radius-large);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.converter-row {
+  display: flex;
+  align-items: flex-end; /* Align items based on their bottom edge */
+  gap: 20px;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+/* --- Input Groups (From/To) --- */
+.input-group {
+  flex: 1; /* Allow groups to grow */
+  min-width: 200px; /* Minimum width before wrapping */
+  background-color: var(--input-bg-color);
+  border-radius: var(--border-radius-medium);
+  padding: 10px 15px;
+  border: 1px solid var(--border-color);
+  transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.input-group:focus-within { /* Style when any element inside is focused */
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px var(--accent-color-light);
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-color-secondary);
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.input-group input[type="number"] {
+  width: 100%;
+  border: none;
+  background-color: transparent;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--text-color-primary);
+  padding: 8px 0;
+  outline: none;
+  box-sizing: border-box;
+  /* Hide spinner buttons on number inputs (optional) */
+  -moz-appearance: textfield;
+}
+.input-group input[type="number"]::-webkit-outer-spin-button,
+.input-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+/* --- Select Dropdown Styling --- */
+.select-wrapper {
+  position: relative;
+  margin-top: 8px;
+  background-color: var(--select-bg-color);
+  border-radius: var(--border-radius-small);
+  border: 1px solid var(--border-color-light);
+  overflow: hidden;
+}
+
+.select-wrapper::after { /* Custom arrow */
+  content: '▼';
+  font-size: 0.8rem;
+  color: var(--accent-color);
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.input-group select {
+  width: 100%;
+  padding: 10px 30px 10px 12px; /* Space for custom arrow */
+  border: none;
+  background-color: transparent;
+  font-size: 0.95rem;
+  color: var(--text-color-primary);
+  appearance: none; /* Remove default browser arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  outline: none;
+}
+
+/* --- Swap Button --- */
+.swap-button {
+  background-color: var(--button-bg-color);
+  color: var(--accent-color);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+  margin-top: 25px; /* Align roughly with input fields */
+  align-self: center;
+  flex-shrink: 0;
+}
+
+.swap-button:hover {
+  background-color: var(--button-hover-bg-color);
+   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+   transform: translateY(-1px);
+}
+.swap-button:active {
+  transform: translateY(0);
+   box-shadow: none;
+}
+
+/* --- Conversion Rate Display --- */
+.conversion-rate-display {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-color-secondary);
+    font-style: italic;
+    min-height: 1.2em; /* Prevent layout shift when text appears */
+}
+
+
+/* --- Footer --- */
+.app-footer {
+  text-align: center;
+  padding: 15px;
+  font-size: 0.85rem;
+  color: var(--text-color-secondary);
+  margin-top: auto; /* Push footer to the bottom */
+  background-color: var(--background-color);
+  border-top: 1px solid var(--border-color);
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 650px) {
+  .converter-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  .input-group {
+    min-width: unset;
+  }
+
+  .swap-button {
+    order: 1; /* Place it between the two input groups */
+    margin: 5px auto;
+    transform: rotate(90deg);
+  }
+
+  /* Need explicit order for input groups when direction is column */
+  .input-group:first-of-type { order: 0; } /* From group */
+  .input-group:last-of-type { order: 2; } /* To group */
+
+}</style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="app-header">
+        <h1>Simple Unit Converter</h1>
+        <p>Easy conversions for everyday units.</p>
+    </header>
+
+    <main class="container">
+        <div class="category-selector">
+            <label for="category-select">Select Category:</label>
+            <select id="category-select">
+                <option value="length">Length</option> <option value="weight">Weight</option>
+                <option value="volume">Volume</option>
+                <option value="temperature">Temperature</option>
+                <option value="time">Time</option>
+            </select>
+        </div>
+
+        <div class="unit-converter">
+            <div class="converter-row">
+                <div class="input-group">
+                    <label for="from-value">From</label>
+                    <input type="number" id="from-value" value="1">
+                    <div class="select-wrapper">
+                        <select id="from-unit">
+                            </select>
+                    </div>
+                </div>
+
+                <button id="swap-button" class="swap-button" title="Swap Units" aria-label="Swap units and values">
+                    &#x21C6; </button>
+
+                <div class="input-group">
+                    <label for="to-value">To</label>
+                    <input type="number" id="to-value">
+                    <div class="select-wrapper">
+                        <select id="to-unit">
+                            </select>
+                    </div>
+                </div>
+            </div>
+             <div id="conversion-rate-display" class="conversion-rate-display"></div>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <p>Built with HTML, CSS, and JavaScript. &copy; <span id="current-year"></span></p>
+    </footer>
+
+    <script>
+// --- 1. Define Conversion Data ---
+// Same logic as before, just without currency
+const conversionFormulas = {
+    length: {
+      baseUnit: 'meter',
+      units: { meter: { name: 'Meter', factor: 1 }, kilometer: { name: 'Kilometer', factor: 1000 }, centimeter: { name: 'Centimeter', factor: 0.01 }, millimeter: { name: 'Millimeter', factor: 0.001 }, mile: { name: 'Mile', factor: 1609.34 }, yard: { name: 'Yard', factor: 0.9144 }, foot: { name: 'Foot', factor: 0.3048 }, inch: { name: 'Inch', factor: 0.0254 } }
+    },
+    weight: {
+      baseUnit: 'kilogram',
+      units: { kilogram: { name: 'Kilogram', factor: 1 }, gram: { name: 'Gram', factor: 0.001 }, milligram: { name: 'Milligram', factor: 0.000001 }, tonne: { name: 'Metric Tonne', factor: 1000 }, pound: { name: 'Pound', factor: 0.453592 }, ounce: { name: 'Ounce', factor: 0.0283495 } }
+    },
+    volume: {
+      baseUnit: 'liter',
+      units: { liter: { name: 'Liter', factor: 1 }, milliliter: { name: 'Milliliter', factor: 0.001 }, cubic_meter: { name: 'Cubic Meter', factor: 1000 }, gallon_us: { name: 'US Gallon', factor: 3.78541 }, pint_us: { name: 'US Pint', factor: 0.473176 }, cup_us: { name: 'US Cup', factor: 0.236588 } }
+    },
+    time: {
+      baseUnit: 'second',
+      units: { second: { name: 'Second', factor: 1 }, millisecond: { name: 'Millisecond', factor: 0.001 }, minute: { name: 'Minute', factor: 60 }, hour: { name: 'Hour', factor: 3600 }, day: { name: 'Day', factor: 86400 }, week: { name: 'Week', factor: 604800 } }
+    },
+    temperature: {
+      units: { celsius: { name: 'Celsius (°C)' }, fahrenheit: { name: 'Fahrenheit (°F)' }, kelvin: { name: 'Kelvin (K)' } },
+      convert: (value, fromUnit, toUnit) => {
+        if (fromUnit === toUnit) return value;
+        const val = parseFloat(value); if (isNaN(val)) return NaN;
+        let celsiusValue;
+        switch (fromUnit) { case 'celsius': celsiusValue = val; break; case 'fahrenheit': celsiusValue = (val - 32) * (5 / 9); break; case 'kelvin': celsiusValue = val - 273.15; break; default: return NaN; }
+        switch (toUnit) { case 'celsius': return celsiusValue; case 'fahrenheit': return celsiusValue * (9 / 5) + 32; case 'kelvin': return celsiusValue + 273.15; default: return NaN; }
+      }
+    }
+};
+
+// --- 2. Get References to HTML Elements ---
+// We use document.getElementById to grab the elements we need to interact with.
+const categorySelect = document.getElementById('category-select');
+const fromValueInput = document.getElementById('from-value');
+const fromUnitSelect = document.getElementById('from-unit');
+const toValueInput = document.getElementById('to-value');
+const toUnitSelect = document.getElementById('to-unit');
+const swapButton = document.getElementById('swap-button');
+const rateDisplay = document.getElementById('conversion-rate-display');
+const currentYearSpan = document.getElementById('current-year');
+
+// --- 3. Utility Functions ---
+
+/**
+ * Formats a number to a maximum number of decimal places, removing trailing zeros.
+ * @param {number} num The number to format.
+ * @param {number} maxDecimals Maximum decimal places.
+ * @returns {string} The formatted number as a string.
+ */
+function formatNumber(num, maxDecimals = 6) {
+    if (isNaN(num) || num === null) return '';
+    // Use toFixed for rounding, then parseFloat to remove trailing zeros
+    return parseFloat(num.toFixed(maxDecimals)).toString();
+}
+
+/**
+ * Populates the "From" and "To" unit dropdowns based on the selected category.
+ * @param {string} category The selected category key (e.g., 'length').
+ */
+function populateUnitDropdowns(category) {
+    const categoryData = conversionFormulas[category];
+    if (!categoryData) return; // Exit if category is invalid
+
+    const units = Object.keys(categoryData.units);
+
+    // Clear existing options
+    fromUnitSelect.innerHTML = '';
+    toUnitSelect.innerHTML = '';
+
+    // Add new options
+    units.forEach(unitKey => {
+        const unitName = categoryData.units[unitKey].name;
+        // Create <option> element for 'From' dropdown
+        const fromOption = document.createElement('option');
+        fromOption.value = unitKey;
+        fromOption.textContent = unitName;
+        fromUnitSelect.appendChild(fromOption);
+
+        // Create <option> element for 'To' dropdown
+        const toOption = document.createElement('option');
+        toOption.value = unitKey;
+        toOption.textContent = unitName;
+        toUnitSelect.appendChild(toOption);
+    });
+
+    // Set default selections (e.g., first and second unit)
+    fromUnitSelect.value = units[0];
+    toUnitSelect.value = units.length > 1 ? units[1] : units[0];
+}
+
+/**
+ * Performs the conversion calculation (same logic as before).
+ */
+ function performConversion(value, fromUnit, toUnit, category) {
+    const numericValue = parseFloat(value);
+    if (isNaN(numericValue)) return null;
+
+    const categoryData = conversionFormulas[category];
+    if (!categoryData) return null;
+
+    if (category === 'temperature') {
+        const result = categoryData.convert(numericValue, fromUnit, toUnit);
+        return isNaN(result) ? null : result;
+    }
+
+    const from = categoryData.units[fromUnit];
+    const to = categoryData.units[toUnit];
+    if (!from || !to) return null;
+
+    const baseUnitFactor = categoryData.units[categoryData.baseUnit].factor;
+    const valueInBaseUnit = (numericValue * from.factor) / baseUnitFactor;
+    const valueInTargetUnit = (valueInBaseUnit * baseUnitFactor) / to.factor;
+
+    return valueInTargetUnit;
+}
+
+
+/**
+ * Updates the 'To' input field based on the 'From' input and selected units.
+ * Also updates the conversion rate display.
+ */
+function updateResult() {
+    const fromValue = fromValueInput.value;
+    const fromUnit = fromUnitSelect.value;
+    const toUnit = toUnitSelect.value;
+    const category = categorySelect.value;
+
+    const result = performConversion(fromValue, fromUnit, toUnit, category);
+    toValueInput.value = formatNumber(result); // Format before displaying
+
+    // Update the rate display (e.g., "1 Meter = 3.2808 Feet")
+    const rate = performConversion(1, fromUnit, toUnit, category);
+    const fromUnitName = conversionFormulas[category]?.units[fromUnit]?.name || fromUnit;
+    const toUnitName = conversionFormulas[category]?.units[toUnit]?.name || toUnit;
+    if (rate !== null && fromUnit !== toUnit) {
+         rateDisplay.textContent = `1 ${fromUnitName} = ${formatNumber(rate)} ${toUnitName}`;
+    } else if (fromUnit === toUnit) {
+         rateDisplay.textContent = `1 ${fromUnitName} = 1 ${toUnitName}`;
+    }
+     else {
+        rateDisplay.textContent = ''; // Clear if conversion fails
+    }
+}
+
+/**
+ * Updates the 'From' input field based on the 'To' input and selected units.
+ * Called when the user types in the 'To' box.
+ */
+ function updateReverseResult() {
+    const toValue = toValueInput.value;
+    const fromUnit = fromUnitSelect.value;
+    const toUnit = toUnitSelect.value;
+    const category = categorySelect.value;
+
+    // Perform conversion in reverse (To -> From)
+    const result = performConversion(toValue, toUnit, fromUnit, category);
+    fromValueInput.value = formatNumber(result); // Format before displaying
+
+     // Update rate display (optional, could skip here as updateResult covers it)
+     updateResult(); // Easiest way to keep rate display consistent
+}
+
+
+/**
+ * Swaps the units and values between the 'From' and 'To' sides.
+ */
+function swapUnits() {
+    // Swap selected units
+    const currentFromUnit = fromUnitSelect.value;
+    fromUnitSelect.value = toUnitSelect.value;
+    toUnitSelect.value = currentFromUnit;
+
+    // Swap input values
+    const currentFromValue = fromValueInput.value;
+    fromValueInput.value = toValueInput.value;
+    toValueInput.value = currentFromValue; // Use the *original* 'from' value
+
+    // Recalculate the result after swapping
+    updateResult();
+}
+
+// --- 4. Attach Event Listeners ---
+// These tell the browser to call our functions when the user interacts with the page.
+
+// When the category changes: Populate units and update the result.
+categorySelect.addEventListener('change', () => {
+    populateUnitDropdowns(categorySelect.value);
+    updateResult();
+});
+
+// When the user types in the 'From' input: Update the result.
+fromValueInput.addEventListener('input', updateResult);
+
+// When the 'From' unit changes: Update the result.
+fromUnitSelect.addEventListener('change', updateResult);
+
+// When the user types in the 'To' input: Update the 'From' value (reverse).
+toValueInput.addEventListener('input', updateReverseResult);
+
+// When the 'To' unit changes: Update the result (based on 'From' value).
+toUnitSelect.addEventListener('change', updateResult);
+
+// When the swap button is clicked: Swap units and values.
+swapButton.addEventListener('click', swapUnits);
+
+// --- 5. Initial Setup ---
+// Run these once when the page loads.
+
+// Set the current year in the footer
+currentYearSpan.textContent = new Date().getFullYear();
+
+// Populate the dropdowns for the default category ('length').
+populateUnitDropdowns(categorySelect.value);
+
+// Perform the initial conversion based on default values.
+updateResult();
+
+
+console.log("Simple Unit Converter Initialized!"); // Message in browser console
+
+</script>
+</body>
+</html>
