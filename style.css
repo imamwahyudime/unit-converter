@@ -1,0 +1,261 @@
+
+:root {
+  --primary-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --background-color: #f4f7f9;
+  --card-background-color: #ffffff;
+  --text-color-primary: #2c3e50;
+  --text-color-secondary: #7f8c8d;
+  --accent-color: #3498db;
+  --accent-color-light: #a9cce3;
+  --border-color: #e0e6ed;
+  --border-color-light: #edf2f7;
+  --button-bg-color: #ffffff;
+  --button-hover-bg-color: #f8f9fa;
+  --input-bg-color: #fdfdfe;
+  --select-bg-color: #f7f9fb;
+
+  --border-radius-small: 4px;
+  --border-radius-medium: 6px;
+  --border-radius-large: 8px;
+
+  --transition-speed: 0.2s;
+}
+
+/* --- Basic Reset & Body Styles --- */
+body {
+  margin: 0;
+  font-family: var(--primary-font);
+  background-color: var(--background-color);
+  color: var(--text-color-primary);
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* --- Header --- */
+.app-header {
+  background-color: var(--accent-color);
+  color: white;
+  padding: 25px 20px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.app-header h1 {
+  margin: 0 0 5px 0;
+  font-size: 2rem;
+  font-weight: 600;
+}
+.app-header p {
+    margin: 0;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* --- Main Container --- */
+.container {
+  flex-grow: 1; /* Takes up remaining vertical space */
+  padding: 20px;
+  width: 100%;
+  max-width: 800px; /* Max width for the content area */
+  margin: 20px auto; /* Center the container */
+}
+
+/* --- Category Selector --- */
+.category-selector {
+    background-color: var(--card-background-color);
+    padding: 15px 20px;
+    border-radius: var(--border-radius-medium);
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.category-selector label {
+    font-weight: 500;
+    color: var(--text-color-secondary);
+}
+.category-selector select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    font-size: 0.95rem;
+    flex-grow: 1; /* Allow select to take available space */
+    background-color: var(--select-bg-color);
+    cursor: pointer;
+}
+
+/* --- Unit Converter Box --- */
+.unit-converter {
+  background-color: var(--card-background-color);
+  padding: 25px 30px;
+  border-radius: var(--border-radius-large);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.converter-row {
+  display: flex;
+  align-items: flex-end; /* Align items based on their bottom edge */
+  gap: 20px;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+/* --- Input Groups (From/To) --- */
+.input-group {
+  flex: 1; /* Allow groups to grow */
+  min-width: 200px; /* Minimum width before wrapping */
+  background-color: var(--input-bg-color);
+  border-radius: var(--border-radius-medium);
+  padding: 10px 15px;
+  border: 1px solid var(--border-color);
+  transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.input-group:focus-within { /* Style when any element inside is focused */
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px var(--accent-color-light);
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-color-secondary);
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.input-group input[type="number"] {
+  width: 100%;
+  border: none;
+  background-color: transparent;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--text-color-primary);
+  padding: 8px 0;
+  outline: none;
+  box-sizing: border-box;
+  /* Hide spinner buttons on number inputs (optional) */
+  -moz-appearance: textfield;
+}
+.input-group input[type="number"]::-webkit-outer-spin-button,
+.input-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+/* --- Select Dropdown Styling --- */
+.select-wrapper {
+  position: relative;
+  margin-top: 8px;
+  background-color: var(--select-bg-color);
+  border-radius: var(--border-radius-small);
+  border: 1px solid var(--border-color-light);
+  overflow: hidden;
+}
+
+.select-wrapper::after { /* Custom arrow */
+  content: '▼';
+  font-size: 0.8rem;
+  color: var(--accent-color);
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.input-group select {
+  width: 100%;
+  padding: 10px 30px 10px 12px; /* Space for custom arrow */
+  border: none;
+  background-color: transparent;
+  font-size: 0.95rem;
+  color: var(--text-color-primary);
+  appearance: none; /* Remove default browser arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  outline: none;
+}
+
+/* --- Swap Button --- */
+.swap-button {
+  background-color: var(--button-bg-color);
+  color: var(--accent-color);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+  margin-top: 25px; /* Align roughly with input fields */
+  align-self: center;
+  flex-shrink: 0;
+}
+
+.swap-button:hover {
+  background-color: var(--button-hover-bg-color);
+   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+   transform: translateY(-1px);
+}
+.swap-button:active {
+  transform: translateY(0);
+   box-shadow: none;
+}
+
+/* --- Conversion Rate Display --- */
+.conversion-rate-display {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-color-secondary);
+    font-style: italic;
+    min-height: 1.2em; /* Prevent layout shift when text appears */
+}
+
+
+/* --- Footer --- */
+.app-footer {
+  text-align: center;
+  padding: 15px;
+  font-size: 0.85rem;
+  color: var(--text-color-secondary);
+  margin-top: auto; /* Push footer to the bottom */
+  background-color: var(--background-color);
+  border-top: 1px solid var(--border-color);
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 650px) {
+  .converter-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  .input-group {
+    min-width: unset;
+  }
+
+  .swap-button {
+    order: 1; /* Place it between the two input groups */
+    margin: 5px auto;
+    transform: rotate(90deg);
+  }
+
+  /* Need explicit order for input groups when direction is column */
+  .input-group:first-of-type { order: 0; } /* From group */
+  .input-group:last-of-type { order: 2; } /* To group */
+
+}
